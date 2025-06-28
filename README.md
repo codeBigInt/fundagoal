@@ -76,28 +76,22 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 - **Zero Censorship**: Decentralized architecture resists takedowns
 - **Zero-Knowledge Proofs**: Verify contributions without revealing details
 
-## Join the Privacy Revolution
-
-FundAGoal represents the future of crowdfunding - where transparency and privacy coexist. Support the projects you believe in without sacrificing your anonymity.
-
-**Ready to fund a goal? Start exploring campaigns today.**
-
 ## How to run the project locally
 
 ```js
     /* Development Pre-requisite */
 
     // Install compactc compiler (Guide)
-    "Installation guide": "https://docs.midnight.network/develop/tutorial/building/#midnight-compact-compiler"
+    "Installation guide": https://docs.midnight.network/develop/tutorial/building/#midnight-compact-compiler
 
     // Install proof serve
-    "Installation guide": "https://docs.midnight.network/develop/tutorial/using/proof-server"
+    "Installation guide": https://docs.midnight.network/develop/tutorial/using/proof-server
 
     // Token Aquisation
-    "Visit faucet page": "https://docs.midnight.network/develop/tutorial/using/proof-server"
+    "Visit faucet page": https://docs.midnight.network/develop/tutorial/using/proof-server
 
     // Lace wallet setup
-    "Wallet setup guide" :"https://docs.midnight.network/develop/tutorial/using/chrome-ext"
+    "Wallet setup guide" : https://docs.midnight.network/develop/tutorial/using/chrome-ext
 
     /* Running the DApp locally */
 
