@@ -78,20 +78,19 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 
 ## How to run the project locally
 
+Development Pre-requisite
+
+- Install compactc compiler (Guide)
+- Installation guide": https://docs.midnight.network/develop/tutorial/building/#midnight-compact-compiler
+
+- Install proof serve
+- Installation guide": https://docs.midnight.network/develop/tutorial/using/proof-server
+
+Token Aquisation
+- Visit faucet page": https://docs.midnight.network/develop/tutorial/using/proof-server
+- Lace wallet setup
+- Wallet setup guide" : https://docs.midnight.network/develop/tutorial/using/chrome-ext
 ```js
-    /* Development Pre-requisite */
-
-    // Install compactc compiler (Guide)
-    "Installation guide": https://docs.midnight.network/develop/tutorial/building/#midnight-compact-compiler
-
-    // Install proof serve
-    "Installation guide": https://docs.midnight.network/develop/tutorial/using/proof-server
-
-    // Token Aquisation
-    "Visit faucet page": https://docs.midnight.network/develop/tutorial/using/proof-server
-
-    // Lace wallet setup
-    "Wallet setup guide" : https://docs.midnight.network/develop/tutorial/using/chrome-ext
 
     /* Running the DApp locally */
 
