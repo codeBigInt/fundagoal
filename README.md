@@ -70,7 +70,7 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 
 ## How to run the project locally
 
-**Development Pre-requisite**
+**Pre-requisite**
 
 - Install compactc compiler (Guide): [https://docs.midnight.network/develop/tutorial/building/]#midnight-compact-compiler
 
@@ -81,6 +81,8 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 - Token Aquisation: [https://docs.midnight.network/develop/tutorial/using/proof-server]
 
 - Lace wallet setup: [https://docs.midnight.network/develop/tutorial/using/chrome-ext]
+
+- Contract Documentation: [https://github.com/codeBigInt/fundagoal/blob/main/packages/contract/README.md]
 
 **NOTE**: This project is a monorepo that ustilizes turborepo.
 
