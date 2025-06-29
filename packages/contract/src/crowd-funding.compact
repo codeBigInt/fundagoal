@@ -123,6 +123,21 @@ export circuit endCampaign(_campaignId: Bytes<32>): []  {
     const reconstructedOwnersHash = generateOwnersPK(ownPublicKey().bytes, disclose(local_secrete_key()), disclosedId);
 
     assert (reconstructedOwnersHash == campaignToEnd.owner, "Can not end this campaign: You are not the owner");
+    
+    if(campaignToEnd.raised > 0){
+        // Sends funds before ending the campaign
+        const sendResult = send(
+            protocolTVL.lookup(campaignToEnd.coinType), 
+            left<ZswapCoinPublicKey, ContractAddress>(ownPublicKey()),
+            campaignToEnd.raised
+        );
+
+        // Updates balance 
+        sendResult.change.is_some ? 
+        protocolTVL.insertCoin(campaignToEnd.coinType, sendResult.change.value, right<ZswapCoinPublicKey, ContractAddress>(kernel.self())) :
+        protocolTVL.remove(campaignToEnd.coinType);
+    }
+
     // Removes the campaign from the list
     campaigns.insert(disclosedId, Campaign{
         ...campaignToEnd,

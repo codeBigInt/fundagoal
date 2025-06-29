@@ -12,6 +12,7 @@ import {
   CheckCircle,
   Coins,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import {
   type DerivedCampaign,
@@ -35,6 +36,7 @@ import { Textarea } from "./ui/textarea";
 import { CampaignStatus } from "@crowd-funding/crowd-funding-contract";
 import { Progress } from "@radix-ui/react-progress";
 import { toast } from "react-hot-toast";
+import { uint8arraytostring } from "../../../api/dist/utils";
 
 const CampaignBoard = React.memo(() => {
   const deploymentContext = useDeployment();
@@ -43,6 +45,9 @@ const CampaignBoard = React.memo(() => {
   const [isEditingId, setIsEditingId] = useState<string | null>(null);
   const [isWithdrawingId, setIsWithdrawingId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isEnding, setIsEnding] = useState<string | null>(null);
+  const [isRefunding, setIsRefunding] = useState<string | null>(null);
+  const [isCanceliing, setIsCanceliing] = useState<string | null>(null);
 
   const deploymentProvider = deploymentContext?.crowdFundingApi;
 
@@ -101,43 +106,164 @@ const CampaignBoard = React.memo(() => {
         >
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between mb-3">
-              <Button
-                onClick={async () => {
-                  setIsWithdrawingId(campaign.id);
-                  try {
-                    const txData =
-                      await deploymentContext?.crowdFundingApi?.withdrawCampaignFunds(
-                        campaign.id
-                      );
-                    setIsWithdrawingId(null);
-                    if (txData?.public.status == "SucceedEntirely") {
-                      toast.success("Transaction successful");
-                    } else {
-                      toast.error("Transaction Failed");
+              <div className="flex gap-2 items-center">
+                <Button
+                  onClick={async () => {
+                    setIsWithdrawingId(campaign.id);
+                    try {
+                      const txData =
+                        await deploymentContext?.crowdFundingApi?.withdrawCampaignFunds(
+                          campaign.id
+                        );
+                      setIsWithdrawingId(null);
+                      if (txData?.public.status == "SucceedEntirely") {
+                        toast.success("Transaction successful");
+                      } else {
+                        toast.error("Transaction Failed");
+                      }
+                    } catch (error) {
+                      const errMsg =
+                        error instanceof Error
+                          ? error.message
+                          : "Failed to withdraw";
+                      toast.error(errMsg);
+                      setIsWithdrawingId(null);
                     }
-                  } catch (error) {
-                    const errMsg =
-                      error instanceof Error
-                        ? error.message
-                        : "Failed to withdraw";
-                    toast.error(errMsg);
-                    setIsWithdrawingId(null);
+                  }}
+                  variant="outline"
+                  className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
+                  disabled={
+                    isWithdrawingId === campaign.id ||
+                    campaign.campaign.status == CampaignStatus.closed ||
+                    campaign.campaign.status == CampaignStatus.withdrawn
                   }
-                }}
-                variant="outline"
-                className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
-                disabled={isWithdrawingId === campaign.id}
-              >
-                <Coins className="w-4 h-4" />
-                {isWithdrawingId === campaign.id ? (
-                  <>
-                    <Loader2 className="animate-spin w-4 h-4" />
-                    Withdrawing...
-                  </>
-                ) : (
-                  "Withdraw"
-                )}
-              </Button>
+                >
+                  <Coins className="w-4 h-4" />
+                  {isWithdrawingId === campaign.id ? (
+                    <>
+                      <Loader2 className="animate-spin w-4 h-4" />
+                      Withdrawing...
+                    </>
+                  ) : (
+                    "Withdraw"
+                  )}
+                </Button>
+
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
+                      disabled={
+                        isRefunding === campaign.id ||
+                        campaign.campaign.status == CampaignStatus.closed ||
+                        campaign.campaign.status == CampaignStatus.withdrawn
+                      }
+                    >
+                      <Coins className="w-4 h-4" />
+                      {isRefunding === campaign.id ? (
+                        <>
+                          <Loader2 className="animate-spin w-4 h-4" />
+                          Refunding...
+                        </>
+                      ) : (
+                        "Requet refund"
+                      )}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent
+                    className="bg-zinc-900/95 border-zinc-700/50 backdrop-blur-xl z-[9999] fixed inset-0 flex items-center justify-center"
+                    style={{ padding: 0 }}
+                  >
+                    <div className="w-full max-w-md mx-auto p-6 bg-zinc-900/95 border-zinc-700/50 rounded-lg shadow-lg">
+                      <DialogHeader>
+                        <DialogTitle className="text-zinc-100">
+                          Request refund from campaign
+                        </DialogTitle>
+                        <DialogDescription className="text-zinc-400">
+                          Sends back part or all of your asset deposited into
+                          the campaign (ONLY ACTIVE CAMPAIGNS).
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form
+                        onSubmit={async (e) => {
+                          e.preventDefault();
+                          setIsRefunding(campaign.id);
+                          const formData = new FormData(e.currentTarget);
+                          try {
+                            const txData =
+                              await deploymentContext?.crowdFundingApi?.requestRefund(
+                                campaign.id,
+                                Number(formData.get("refund_amount")),
+                                Number(formData.get("deposit"))
+                              );
+                            setIsRefunding(null);
+                            if (txData?.public.status == "SucceedEntirely") {
+                              toast.success("Transaction successful");
+                            } else {
+                              toast.error("Transaction Failed");
+                            }
+                          } catch (error) {
+                            const errMsg =
+                              error instanceof Error
+                                ? error.message
+                                : "Failed to Refund";
+                            toast.error(errMsg);
+                            setIsRefunding(null);
+                          }
+                        }}
+                        className="space-y-4"
+                      >
+                        <div className="grid grid-cols-1 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="title" className="text-zinc-200">
+                              Amount to refund
+                            </Label>
+                            <Input
+                              id="refund_amount"
+                              name="refund_amount"
+                              placeholder="0 tDUST"
+                              type="number"
+                              required
+                              className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label
+                              htmlFor="description"
+                              className="text-zinc-200"
+                            >
+                              How much did you deposit
+                            </Label>
+                            <Input
+                              id="deposit"
+                              name="deposit"
+                              placeholder="0 tDUST"
+                              type="number"
+                              required
+                              className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500"
+                            />
+                          </div>
+                        </div>
+                        <Button
+                          disabled={isRefunding === campaign.id}
+                          type="submit"
+                          className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-lg"
+                        >
+                          {isRefunding === campaign.id ? (
+                            <>
+                              <Loader2 className="animate-spin w-4 h-4 mr-2" />
+                              Requesting...
+                            </>
+                          ) : (
+                            "Request"
+                          )}
+                        </Button>
+                      </form>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
               {campaign.campaign.status == CampaignStatus.closed ||
               campaign.campaign.status == CampaignStatus.withdrawn ? (
                 <span className="p-1 bg-red-500 rounded-full"></span>
@@ -145,6 +271,7 @@ const CampaignBoard = React.memo(() => {
                 <span className="p-1 bg-green-500 rounded-full"></span>
               )}
             </div>
+            <span className="p-2 rounded-3xl text-zinc-100 w-max border border-zinc-100 mb-4">{`0x${uint8arraytostring(campaign.campaign.owner).slice(0, 8)}...`}</span>
             <CardTitle className="line-clamp-2 text-zinc-100 text-xl">
               {campaign.campaign.title}
             </CardTitle>
@@ -190,48 +317,94 @@ const CampaignBoard = React.memo(() => {
             </div>
 
             <div className="flex flex-col text-sm text-zinc-400">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between pb-3">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4" />
                   <span>{campaign.campaign.contributors} contributors</span>
                 </div>
-                <Button
-                  onClick={async () => {
-                    setIsEditingId(campaign.id + "-end");
-                    try {
-                      const txData =
-                        await deploymentContext?.crowdFundingApi?.endCampaign(
-                          campaign.id
-                        );
-                      setIsEditingId(null);
-                      if (txData?.public.status == "SucceedEntirely") {
-                        toast.success("Transaction successful");
-                      } else {
-                        toast.error("Transaction Failed");
+                <div className=" flex items-center gap-2">
+                  <Button
+                    onClick={async () => {
+                      setIsEnding(campaign.id + "-end");
+                      try {
+                        const txData =
+                          await deploymentContext?.crowdFundingApi?.endCampaign(
+                            campaign.id
+                          );
+                        setIsEnding(null);
+                        if (txData?.public.status == "SucceedEntirely") {
+                          toast.success("Transaction successful");
+                        } else {
+                          toast.error("Transaction Failed");
+                        }
+                      } catch (error) {
+                        const errMsg =
+                          error instanceof Error
+                            ? error.message
+                            : "Failed to end campaign";
+                        toast.error(errMsg);
+                        setIsEnding(null);
                       }
-                    } catch (error) {
-                      const errMsg =
-                        error instanceof Error
-                          ? error.message
-                          : "Failed to end campaign";
-                      toast.error(errMsg);
-                      setIsEditingId(null);
+                    }}
+                    variant="outline"
+                    className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
+                    disabled={
+                      isEnding === campaign.id + "-end" ||
+                      campaign.campaign.status == CampaignStatus.closed ||
+                      campaign.campaign.status == CampaignStatus.withdrawn
                     }
-                  }}
-                  variant="outline"
-                  className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
-                  disabled={isEditingId === campaign.id + "-end"}
-                >
-                  <CheckCircle className="w-4 h-4" />
-                  {isEditingId === campaign.id + "-end" ? (
-                    <>
-                      <Loader2 className="animate-spin w-4 h-4" />
-                      Ending...
-                    </>
-                  ) : (
-                    "End"
-                  )}
-                </Button>
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    {isEnding === campaign.id + "-end" ? (
+                      <>
+                        <Loader2 className="animate-spin w-4 h-4" />
+                        Ending...
+                      </>
+                    ) : (
+                      "End"
+                    )}
+                  </Button>
+
+                  <Button
+                    onClick={async () => {
+                      setIsCanceliing(campaign.id + "-end");
+                      try {
+                        const txData =
+                          await deploymentContext?.crowdFundingApi?.cancelCampaign(
+                            campaign.id
+                          );
+                        setIsCanceliing(null);
+                        if (txData?.public.status == "SucceedEntirely") {
+                          toast.success("Transaction successful");
+                        } else {
+                          toast.error("Transaction Failed");
+                        }
+                      } catch (error) {
+                        const errMsg =
+                          error instanceof Error
+                            ? error.message
+                            : "Failed to end campaign";
+                        toast.error(errMsg);
+                        setIsCanceliing(null);
+                      }
+                    }}
+                    variant="outline"
+                    className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
+                    disabled={
+                      isCanceliing === campaign.id + "-end" ||
+                      campaign.campaign.status == CampaignStatus.closed ||
+                      campaign.campaign.status == CampaignStatus.withdrawn
+                    }
+                  >
+                    {isCanceliing === campaign.id + "-end" ? (
+                      <>
+                        <Loader2 className="animate-spin w-4 h-4" />
+                      </>
+                    ) : (
+                      <Trash2 />
+                    )}
+                  </Button>
+                </div>
               </div>
               <div className="flex justify-between items-center">
                 <div className="flex items-center gap-2">
@@ -247,6 +420,10 @@ const CampaignBoard = React.memo(() => {
                   <DialogTrigger asChild>
                     {deploymentContext?.hasJoined && (
                       <Button
+                        disabled={
+                          campaign.campaign.status == CampaignStatus.closed ||
+                          campaign.campaign.status == CampaignStatus.withdrawn
+                        }
                         variant="outline"
                         className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
                       >
@@ -416,10 +593,10 @@ const CampaignBoard = React.memo(() => {
                       );
                       try {
                         const txData =
-                        await deploymentContext?.crowdFundingApi?.fundCampaign(
-                          campaign.id,
-                          amount
-                        );
+                          await deploymentContext?.crowdFundingApi?.fundCampaign(
+                            campaign.id,
+                            amount
+                          );
                         if (txData?.public.status == "SucceedEntirely") {
                           toast.success("Transaction successful");
                         } else {

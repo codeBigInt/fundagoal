@@ -273,7 +273,7 @@ export default function Component() {
                 </Button>
               </div>
             ) : (
-              <div>
+              <div className="flex flex-col gap-4">
                 <div className="mb-10">
                   <h2 className="text-4xl font-bold mb-3 text-zinc-100">
                     Active Funding Pools

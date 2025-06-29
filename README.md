@@ -122,7 +122,7 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
     /* You would these env variables for the Frontend to work */
     VITE_NETWORK_ID=TestNet
     VITE_LOGGING_LEVEL=trace
-    VITE_CONTRACT_ADDRESS=02006753fe35025767828e67a7d1903075eb4834fb425f4c4d959c8c5b8f4b126047
+    VITE_CONTRACT_ADDRESS=0200db8f26a22a2cd1812ef06bc6bb6c7d82a211a00a2472a806b125f50d6bc8f2fb
 ```
 
 **CLI DApp testnet wallets for easy testing**
