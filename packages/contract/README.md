@@ -66,7 +66,13 @@ struct Backer {
 ### Offchain witness interaction
 The contract utilizes witness to retrieve offchain private state such as `local_secrete_key()`,  `confirm_campaign_expiration()` to confirm if a campaign is active or has ended, and `findBacker()` to generate zero-knoledge proof for verifying backers in the merkle tree. 
 ```ts
+/* Enable utilization of offchain generated ssecrete key for id or commitment generation */
+witness local_secrete_key(): Bytes<32>;
 
+/* @confirm_campaign_expiry --> Checks to see if a campaign is expired or still valid */
+witness confirm_campaign_expiration(duration: Uint<128>, startDate: Uint<128>): Boolean;
+/* Genrates proof for a backer/contributor to show that they had contributed to a least one campaign */
+witness findBacker(commitment: Bytes<32>): MerkleTreePath<100, Bytes<32>>;
 ```
 
 ## Technical Details
