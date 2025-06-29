@@ -26,7 +26,7 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 1. **Create Your Campaign**: Set your funding goal, duration, and campaign details
 2. **Track Progress**: Monitor your campaign's progress in real-time
 3. **Withdraw Funds**: Securely collect funds when your goal is reached
-4. **Stay in Control**: Update, pause, or close your campaign anytime
+4. **Stay in Control**: Update, cancel, or close your campaign anytime
 
 ### For Supporters 🤝
 
