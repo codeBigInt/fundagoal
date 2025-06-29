@@ -2,11 +2,11 @@
 
 **Anonymous Crowdfunding for the Privacy-First Era**
 
-FundAGoal is a revolutionary decentralized crowdfunding platform that empowers creators to launch funding campaigns while protecting the privacy of their supporters. Built on the Midnight Network, it combines the transparency of blockchain with the anonymity that backers deserve.
+FundAGoal is a revolutionary decentralized crowdfunding platform that empowers creators to launch funding campaigns while protecting the privacy of both themselves and their supporters. Built on the Midnight Network, it combines the transparency of blockchain with the anonymity that backers deserve.
 
 ## What is FundAGoal?
 
-FundAGoal reimagines crowdfunding by solving one of the biggest problems in traditional platforms: **backer privacy**. While campaigns remain transparent and verifiable, the identity and contribution details of supporters are completely anonymous through advanced zero-knowledge cryptography.
+FundAGoal reimagines crowdfunding by solving one of the biggest problems in traditional platforms: **backer's privacy**. While campaigns remain transparent and verifiable, the identity and contribution details of supporters are completely anonymous through advanced zero-knowledge cryptography.
 
 ### 🔒 **Complete Backer Anonymity**
 
@@ -24,10 +24,9 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 ### For Campaign Creators 📢
 
 1. **Create Your Campaign**: Set your funding goal, duration, and campaign details
-2. **Share Your Vision**: Tell your story and attract supporters
-3. **Track Progress**: Monitor your campaign's progress in real-time
-4. **Withdraw Funds**: Securely collect funds when your goal is reached
-5. **Stay in Control**: Update, pause, or close your campaign anytime
+2. **Track Progress**: Monitor your campaign's progress in real-time
+3. **Withdraw Funds**: Securely collect funds when your goal is reached
+4. **Stay in Control**: Update, pause, or close your campaign anytime
 
 ### For Supporters 🤝
 
@@ -38,13 +37,6 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 5. **Verify Impact**: Know your contribution counts without exposing yourself
 
 ## Perfect For
-
-### 🎨 **Creative Projects**
-
-- Independent artists and musicians
-- Film and documentary makers
-- Writers and content creators
-- Open-source software projects
 
 ### 🏛️ **Social Causes**
 
@@ -82,11 +74,15 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 
 - Install compactc compiler (Guide): [https://docs.midnight.network/develop/tutorial/building/]#midnight-compact-compiler
 
-- Install proof server: [https://docs.midnight.network/develop/tutorial/using/proof-server]
+- Install proof server from midnight: [https://docs.midnight.network/develop/tutorial/using/proof-server]
+
+- Install prebaked proof server version (RECOMMENDED): [https://github.com/bricktowers/midnight-proof-server]
 
 - Token Aquisation: [https://docs.midnight.network/develop/tutorial/using/proof-server]
 
 - Lace wallet setup: [https://docs.midnight.network/develop/tutorial/using/chrome-ext]
+
+**NOTE**: This project is a monorepo that ustilizes turborepo.
 
 ```js
 
@@ -112,18 +108,28 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
     // You can either run the cli DApp testnet mode or in undeployed mode
     yarn testnet-remote // For testnet-mode
     yarn standalone // For undeployed mode
+```
 
-    // To run the frontend user interface
+### Interact with the DApp from a UI
+```js
+   /* To run the frontend user interface */
+    
+    /* 
+    * Create a .env file in the root of the ui folder
+    * Add these env variables, it is REQUIRED for the frontend to work 
+    */
+    VITE_NETWORK_ID=TestNet
+    VITE_LOGGING_LEVEL=trace
+    VITE_CONTRACT_ADDRESS=0200db8f26a22a2cd1812ef06bc6bb6c7d82a211a00a2472a806b125f50d6bc8f2fb
+
+
     cd .. && cd packages/ui
     npx turbo run build
 
     yarn start // Starts the application at https://localhost:8080
 
-    /* You would these env variables for the Frontend to work */
-    VITE_NETWORK_ID=TestNet
-    VITE_LOGGING_LEVEL=trace
-    VITE_CONTRACT_ADDRESS=0200db8f26a22a2cd1812ef06bc6bb6c7d82a211a00a2472a806b125f50d6bc8f2fb
 ```
+N
 
 **CLI DApp testnet wallets for easy testing**
 
