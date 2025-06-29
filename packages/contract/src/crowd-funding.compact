@@ -7,10 +7,14 @@ export {Campaign, CampaignStatus, CoinInfo, QualifiedCoinInfo};
 
 enum CampaignStatus {active, withdrawn, closed};
 
-/* Mapping to keep track of  dynamic coin input into the smart contract */
+/* @protocolTVL: Mapping coin.color --> QualifiedCoinInfo -> keeps track of  dynamic coin input into the smart contract */
 export ledger protocolTVL: Map<Bytes<32>, QualifiedCoinInfo>;
+
+/* @campaigns: Mapping campaignId --> Campaign -> keeps campaign that has been created onchain */
 export ledger campaigns: Map<Bytes<32>, Campaign>;
-export ledger backers: MerkleTree<10, Bytes<32>>;
+
+/* Tracks backer commitment hashes anonymously using zero knoledge proof*/
+export ledger backers: MerkleTree<100, Bytes<32>>;
 
 
 struct Campaign {
@@ -27,11 +31,13 @@ struct Campaign {
     coinType: Bytes<32>;
 };
 
-
+/* Enable utilization of offchain generated ssecrete key for id or commitment generation */
 witness local_secrete_key(): Bytes<32>;
+
 /* @confirm_campaign_expiry --> Checks to see if a campaign is expired or still valid */
 witness confirm_campaign_expiration(duration: Uint<128>, startDate: Uint<128>): Boolean;
-witness findBacker(commitment: Bytes<32>): MerkleTreePath<10, Bytes<32>>;
+/* Genrates proof for a backer/contributor to show that they had contributed to a least one campaign */
+witness findBacker(commitment: Bytes<32>): MerkleTreePath<100, Bytes<32>>;
 
 
 /* INTERACTION FOR CAMPAIGN CREATION AND MANAGEMENT */
@@ -64,6 +70,7 @@ export circuit createCampaign(
     campaigns.insert(disclosedId, newCampaign);
 }
 
+/*Delete campaign from the onchain list*/
 export circuit cancelCampaign(_campaignId: Bytes<32>): []  {
     const disclosedId = disclose(_campaignId); 
     
@@ -96,7 +103,7 @@ export circuit withdrawCampaignFunds(_campaignId: Bytes<32>): []{
     protocolTVL.insertCoin(campaignToWithdrawFrom.coinType, sendResult.change.value, left<ZswapCoinPublicKey, ContractAddress>(ownPublicKey())) :
     protocolTVL.remove(campaignToWithdrawFrom.coinType);
 
-    // Update list of campaigns
+    // Updates list of campaigns
     campaigns.remove(disclosedId);
 
     const updatedCampaign = Campaign{
@@ -107,7 +114,7 @@ export circuit withdrawCampaignFunds(_campaignId: Bytes<32>): []{
     campaigns.insert(disclosedId, updatedCampaign);
 }
 
-
+/* Close a campaign at any given point */
 export circuit endCampaign(_campaignId: Bytes<32>): []  {
     const disclosedId = disclose(_campaignId); 
     
@@ -125,21 +132,25 @@ export circuit endCampaign(_campaignId: Bytes<32>): []  {
 
 export circuit updateCampaign(
     _campaignId: Bytes<32>,
-    fundGoal: Uint<128>,
-    duration: Uint<128>
+    _title: Opaque<"string">,
+    _desc: Opaque<"string">,
+    _fundGoal: Uint<128>,
+    _duration: Uint<128>
     ): []{
     const disclosedId = disclose(_campaignId); 
     assert (campaigns.member(disclosedId), "Campaign with the specified ID does not exist");
-    
     const campaignToUpdate = campaigns.lookup(disclosedId);
+    assert (campaignToUpdate.status != CampaignStatus.withdrawn || campaignToUpdate.status != CampaignStatus.closed, "Can not edit campaign: This campaign has ended");
+    
     const reconstructedOwnersHash = generateOwnersPK(ownPublicKey().bytes, disclose(local_secrete_key()), disclosedId);
-
     assert (reconstructedOwnersHash == campaignToUpdate.owner, "Can not end this campaign: You are not the owner");
 
     const updatedCampaign = Campaign{   
         ...campaignToUpdate,
-        fundGoal: disclose(fundGoal),
-        duration: disclose(duration),
+        title: disclose(_title),
+        desc: disclose(_desc),
+        fundGoal: disclose(_fundGoal),
+        duration: disclose(_duration),
     };
     
     campaigns.insert(disclosedId, updatedCampaign);
@@ -153,9 +164,12 @@ export circuit fundCampaign(coin: CoinInfo, _campaignId: Bytes<32>): []{
     const disclosedId = disclose(_campaignId);
     assert (campaigns.member(disclosedId), "Campaign with the specified ID does not exist");
     const campaignToFund = campaigns.lookup(disclosedId);
+    assert (campaignToFund.raised < campaignToFund.fundGoal, "Can not fund this campaign: campaign Fund target reached");
     const isCampaignActive = confirm_campaign_expiration(campaignToFund.duration, campaignToFund.creationDate);
     assert (isCampaignActive, "Campaign with specified ID is no longer active");
+    assert (campaignToFund.status != CampaignStatus.withdrawn || campaignToFund.status != CampaignStatus.closed, "Can not fund campaign: This campaign has ended");
     assert (coin.color == campaignToFund.coinType, "Insufficient funds provided");
+    assert (coin.value <= campaignToFund.fundGoal, "Amount is greater than fund goal");
     receive(disclosedCoin);
 
     const coinToInsert = protocolTVL.member(disclosedCoin.color) ? 
@@ -170,7 +184,8 @@ export circuit fundCampaign(coin: CoinInfo, _campaignId: Bytes<32>): []{
 
     const backer = Backer{
         id: disclose(local_secrete_key()),
-        contribution: disclosedCoin.value as Uint<32>
+        contribution: disclosedCoin.value as Uint<32>,
+        coinType: disclosedCoin.color
     };
 
     const backerCommit = generateCommit(backer, disclosedId);
@@ -190,16 +205,19 @@ export circuit requestRefund(_campaignId: Bytes<32>, refund_amount: Uint<32>, am
 
     assert (campaigns.member(disclosedId), "Campaign with the specified ID does not exist");
     const campaign = campaigns.lookup(disclosedId);
+    assert (campaign.status != CampaignStatus.withdrawn || campaign.status != CampaignStatus.closed, "Can not refund: This campaign has ended");
 
     const backer = Backer{
         id: disclose(local_secrete_key()),
-        contribution: disclose(amountDeposited)
+        contribution: disclose(amountDeposited),
+        coinType: campaign.coinType
     };
 
-    const backerCommit = generateCommit(backer, disclosedId);
-    const path = disclose(findBacker(backerCommit));
+    const backersCommit = generateCommit(backer, disclosedId);
 
-    assert(backers.checkRoot(merkleTreePathRoot<10, Bytes<32>>(path)), "Not a valid backer");
+    const path = disclose(findBacker(backersCommit));
+
+    assert(backers.checkRoot(merkleTreePathRoot<100, Bytes<32>>(path)), "You are not a valid backer for this campaign");
     assert (refund_amount <= amountDeposited, "Can not withdraw more than deposited amount");
     const sendResult = send(
         protocolTVL.lookup(campaign.coinType), 
@@ -208,7 +226,14 @@ export circuit requestRefund(_campaignId: Bytes<32>, refund_amount: Uint<32>, am
     );
 
     sendResult.change.is_some ? 
-    protocolTVL.insertCoin(campaign.coinType, sendResult.change.value, left<ZswapCoinPublicKey, ContractAddress>(ownPublicKey())) :
+    protocolTVL.insertCoin(campaign.coinType, sendResult.change.value, right<ZswapCoinPublicKey, ContractAddress>(kernel.self())) :
     protocolTVL.remove(campaign.coinType);
+
+    const updatedCampaign = Campaign {
+        ...campaign,
+        raised: (campaign.raised - disclose(refund_amount)) as Uint<128>
+    };
+
+    campaigns.insert(disclosedId, updatedCampaign);
 }
 

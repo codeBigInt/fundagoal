@@ -24,6 +24,7 @@ export default function Component() {
   const walletContext = useMidnightWallet();
   const deploymentContext = useDeployment();
   const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(false)
 
   const createCampaign = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -41,6 +42,7 @@ export default function Component() {
 
       if (txData?.public.status == "SucceedEntirely") {
         toast.success("Transaction successful");
+        setIsOpen(false)
       } else {
         toast.error("Transaction Failed");
       }
@@ -64,10 +66,11 @@ export default function Component() {
           </div>
           <div className="flex items-center gap-4">
             {walletContext?.walletState.hasConnected && (
-              <Dialog>
+              <Dialog open={isOpen} onOpenChange={setIsOpen}>
                 <DialogTrigger asChild>
                   {deploymentContext?.hasJoined && (
                     <Button
+                    onClick={() => setIsOpen(true)}
                       variant="outline"
                       className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
                       disabled={isCreating}

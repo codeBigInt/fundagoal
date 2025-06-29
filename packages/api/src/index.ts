@@ -10,9 +10,9 @@ import {
   Contract,
   ledger,
   CrowdFundingPrivateState,
-  witnesses,
   CoinInfo,
   createCrowdFundingPrivateState,
+  witnesses,
 } from "@crowd-funding/crowd-funding-contract";
 import { type Logger } from "pino";
 import * as utils from "./utils.js";
@@ -40,12 +40,33 @@ export interface DeployedCrowdFundingAPI {
     duration: number,
     fundGoal: number
   ) => Promise<FinalizedCallTxData<CrowdFundingContract, "createCampaign">>;
-  withdrawCampaignFunds: (_campaignID: string) => Promise<FinalizedCallTxData<CrowdFundingContract, "withdrawCampaignFunds">>;
-  fundCampaign: (_campaignID: string, amount: number) => Promise<FinalizedCallTxData<CrowdFundingContract, "fundCampaign">>;
-  endCampaign: (_campaignID: string) => Promise<FinalizedCallTxData<CrowdFundingContract, "endCampaign">>;
-  cancelCampaign: (_campaignID: string) => Promise<FinalizedCallTxData<CrowdFundingContract, "cancelCampaign">>;
-  requestRefund: (_campaignID: string, refund_amount: number, amountDeposited: number) => Promise<FinalizedCallTxData<CrowdFundingContract, "requestRefund">>;
-  updateCampaign: (_campaignID: string, fundGoal: number, duration: number) => Promise<FinalizedCallTxData<CrowdFundingContract, "updateCampaign">>;
+  withdrawCampaignFunds: (
+    _campaignID: string
+  ) => Promise<
+    FinalizedCallTxData<CrowdFundingContract, "withdrawCampaignFunds">
+  >;
+  fundCampaign: (
+    _campaignID: string,
+    amount: number
+  ) => Promise<FinalizedCallTxData<CrowdFundingContract, "fundCampaign">>;
+  endCampaign: (
+    _campaignID: string
+  ) => Promise<FinalizedCallTxData<CrowdFundingContract, "endCampaign">>;
+  cancelCampaign: (
+    _campaignID: string
+  ) => Promise<FinalizedCallTxData<CrowdFundingContract, "cancelCampaign">>;
+  requestRefund: (
+    _campaignID: string,
+    refund_amount: number,
+    amountDeposited: number
+  ) => Promise<FinalizedCallTxData<CrowdFundingContract, "requestRefund">>;
+  updateCampaign: (
+    _campaignID: string,
+    title: string,
+    desc: string,
+    fundGoal: number,
+    duration: number
+  ) => Promise<FinalizedCallTxData<CrowdFundingContract, "updateCampaign">>;
 }
 /**
  * NB: Declaring a class implements a given type, means it must contain all defined properties and methods, then take on other extra properties or class
@@ -205,12 +226,15 @@ export class CrowdFundingAPI implements DeployedCrowdFundingAPI {
     return txData;
   }
 
-  async fundCampaign(_campaignID: string, amount: number): Promise<FinalizedCallTxData<CrowdFundingContract, "fundCampaign">> {
+  async fundCampaign(
+    _campaignID: string,
+    amount: number
+  ): Promise<FinalizedCallTxData<CrowdFundingContract, "fundCampaign">> {
     this.logger?.info(`Funding campaign with id ${_campaignID}...`);
 
     const txData = await this.allReadyDeployedContract.callTx.fundCampaign(
       this.coin(amount),
-      utils.hexStringToUint8Array(_campaignID),
+      utils.hexStringToUint8Array(_campaignID)
     );
 
     this.logger?.trace({
@@ -227,7 +251,9 @@ export class CrowdFundingAPI implements DeployedCrowdFundingAPI {
     return txData;
   }
 
-  async endCampaign(_campaignID: string): Promise<FinalizedCallTxData<CrowdFundingContract, "endCampaign">> {
+  async endCampaign(
+    _campaignID: string
+  ): Promise<FinalizedCallTxData<CrowdFundingContract, "endCampaign">> {
     this.logger?.info(`Ending campaign with id ${_campaignID}...`);
 
     const txData = await this.allReadyDeployedContract.callTx.endCampaign(
@@ -247,7 +273,9 @@ export class CrowdFundingAPI implements DeployedCrowdFundingAPI {
     return txData;
   }
 
-  async cancelCampaign(_campaignID: string): Promise<FinalizedCallTxData<CrowdFundingContract, "cancelCampaign">> {
+  async cancelCampaign(
+    _campaignID: string
+  ): Promise<FinalizedCallTxData<CrowdFundingContract, "cancelCampaign">> {
     this.logger?.info(`Canceling campaign with id ${_campaignID}...`);
 
     const txData = await this.allReadyDeployedContract.callTx.cancelCampaign(
@@ -267,8 +295,14 @@ export class CrowdFundingAPI implements DeployedCrowdFundingAPI {
     return txData;
   }
 
-  async requestRefund(_campaignID: string, refund_amount: number, amountDeposited: number): Promise<FinalizedCallTxData<CrowdFundingContract, "requestRefund">> {
-    this.logger?.info(`Refunding ${refund_amount} worth of assets deposited to campaign with id ${_campaignID}...`);
+  async requestRefund(
+    _campaignID: string,
+    refund_amount: number,
+    amountDeposited: number
+  ): Promise<FinalizedCallTxData<CrowdFundingContract, "requestRefund">> {
+    this.logger?.info(
+      `Refunding ${refund_amount} worth of assets deposited to campaign with id ${_campaignID}...`
+    );
 
     const txData = await this.allReadyDeployedContract.callTx.requestRefund(
       utils.hexStringToUint8Array(_campaignID),
@@ -288,13 +322,19 @@ export class CrowdFundingAPI implements DeployedCrowdFundingAPI {
     return txData;
   }
 
-
-  async updateCampaign(_campaignID: string, fundGoal: number, duration: number): Promise<FinalizedCallTxData<CrowdFundingContract, "updateCampaign">>
- {
+  async updateCampaign(
+    _campaignID: string,
+    title: string,
+    desc: string,
+    fundGoal: number,
+    duration: number
+  ): Promise<FinalizedCallTxData<CrowdFundingContract, "updateCampaign">> {
     this.logger?.info(`Updating campaign with id ${_campaignID}...`);
 
     const txData = await this.allReadyDeployedContract.callTx.updateCampaign(
       utils.hexStringToUint8Array(_campaignID),
+      title,
+      desc,
       BigInt(fundGoal),
       BigInt(duration)
     );
@@ -311,12 +351,19 @@ export class CrowdFundingAPI implements DeployedCrowdFundingAPI {
     return txData;
   }
 
-  async withdrawCampaignFunds(_campaignID: string): Promise<FinalizedCallTxData<CrowdFundingContract, "withdrawCampaignFunds">> {
-    this.logger?.info(`Withdrawing funds from campaign with id ${_campaignID}...`);
-
-    const txData = await this.allReadyDeployedContract.callTx.withdrawCampaignFunds(
-      utils.hexStringToUint8Array(_campaignID),
+  async withdrawCampaignFunds(
+    _campaignID: string
+  ): Promise<
+    FinalizedCallTxData<CrowdFundingContract, "withdrawCampaignFunds">
+  > {
+    this.logger?.info(
+      `Withdrawing funds from campaign with id ${_campaignID}...`
     );
+
+    const txData =
+      await this.allReadyDeployedContract.callTx.withdrawCampaignFunds(
+        utils.hexStringToUint8Array(_campaignID)
+      );
 
     this.logger?.trace({
       transactionAdded: {
@@ -330,7 +377,6 @@ export class CrowdFundingAPI implements DeployedCrowdFundingAPI {
     });
     return txData;
   }
-
 
   // Used to get the private state from the wallets privateState Provider
   private static async getPrivateState(

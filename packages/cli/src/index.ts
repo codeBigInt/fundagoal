@@ -273,6 +273,8 @@ const circuit_main_loop = async (
         case "8": {
           await CrowdFundingAPI.updateCampaign(
             await rli.question("Enter campaign id to update:"),
+            await rli.question("Enter new campaign title:"),
+            await rli.question("Enter new campaign description:"),
             Number(await rli.question("Enter new fund goal:")),
             Number(
               await rli.question("Enter new duration for the campaign (days*):")

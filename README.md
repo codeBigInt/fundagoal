@@ -80,13 +80,14 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 
 **Development Pre-requisite**
 
-- Install compactc compiler (Guide): https://docs.midnight.network/develop/tutorial/building/#midnight-compact-compiler
+- Install compactc compiler (Guide): [https://docs.midnight.network/develop/tutorial/building/]#midnight-compact-compiler
 
-- Install proof server: https://docs.midnight.network/develop/tutorial/using/proof-server
+- Install proof server: [https://docs.midnight.network/develop/tutorial/using/proof-server]
 
-- Token Aquisation: https://docs.midnight.network/develop/tutorial/using/proof-server
+- Token Aquisation: [https://docs.midnight.network/develop/tutorial/using/proof-server]
 
-- Lace wallet setup: https://docs.midnight.network/develop/tutorial/using/chrome-ext
+- Lace wallet setup: [https://docs.midnight.network/develop/tutorial/using/chrome-ext]
+
 ```js
 
     /* Running the DApp locally */
@@ -118,12 +119,13 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 
     yarn start // Starts the application at https://localhost:8080
 
-    /* You would these env variables for the Frotend to work */
+    /* You would these env variables for the Frontend to work */
     VITE_NETWORK_ID=TestNet
     VITE_LOGGING_LEVEL=trace
-    VITE_CONTRACT_ADDRESS=02005d363fb14e15b6e6b29d3b861b68101c51e56aa766912b5013ea39060fafa734
-
+    VITE_CONTRACT_ADDRESS=02006753fe35025767828e67a7d1903075eb4834fb425f4c4d959c8c5b8f4b126047
 ```
+
+**CLI DApp testnet wallets for easy testing**
 
 ---
 

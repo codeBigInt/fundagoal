@@ -5,6 +5,7 @@ module CustomLibrary {
     struct Backer {
         id: Bytes<32>;
         contribution: Uint<32>;
+        coinType: Bytes<32>;
     };
 
     circuit generateOwnersPK(address: Bytes<32>, sk: Bytes<32>, rand: Bytes<32>): Bytes<32>{

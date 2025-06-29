@@ -104,16 +104,25 @@ const CampaignBoard = React.memo(() => {
               <Button
                 onClick={async () => {
                   setIsWithdrawingId(campaign.id);
-                  const txData =
-                    await deploymentContext?.crowdFundingApi?.withdrawCampaignFunds(
-                      campaign.id
-                    );
-                  if (txData?.public.status == "SucceedEntirely") {
-                    toast.success("Transaction successful");
-                  } else {
-                    toast.error("Transaction Failed");
+                  try {
+                    const txData =
+                      await deploymentContext?.crowdFundingApi?.withdrawCampaignFunds(
+                        campaign.id
+                      );
+                    setIsWithdrawingId(null);
+                    if (txData?.public.status == "SucceedEntirely") {
+                      toast.success("Transaction successful");
+                    } else {
+                      toast.error("Transaction Failed");
+                    }
+                  } catch (error) {
+                    const errMsg =
+                      error instanceof Error
+                        ? error.message
+                        : "Failed to withdraw";
+                    toast.error(errMsg);
+                    setIsWithdrawingId(null);
                   }
-                  setIsWithdrawingId(null);
                 }}
                 variant="outline"
                 className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
@@ -189,16 +198,25 @@ const CampaignBoard = React.memo(() => {
                 <Button
                   onClick={async () => {
                     setIsEditingId(campaign.id + "-end");
-                    const txData =
-                      await deploymentContext?.crowdFundingApi?.endCampaign(
-                        campaign.id
-                      );
-                    if (txData?.public.status == "SucceedEntirely") {
-                      toast.success("Transaction successful");
-                    } else {
-                      toast.error("Transaction Failed");
+                    try {
+                      const txData =
+                        await deploymentContext?.crowdFundingApi?.endCampaign(
+                          campaign.id
+                        );
+                      setIsEditingId(null);
+                      if (txData?.public.status == "SucceedEntirely") {
+                        toast.success("Transaction successful");
+                      } else {
+                        toast.error("Transaction Failed");
+                      }
+                    } catch (error) {
+                      const errMsg =
+                        error instanceof Error
+                          ? error.message
+                          : "Failed to end campaign";
+                      toast.error(errMsg);
+                      setIsEditingId(null);
                     }
-                    setIsEditingId(null);
                   }}
                   variant="outline"
                   className="gap-2 bg-zinc-900/50 border-zinc-700/50 text-zinc-100 hover:bg-zinc-800/80 hover:border-zinc-600 backdrop-blur-sm"
@@ -256,18 +274,29 @@ const CampaignBoard = React.memo(() => {
                           e.preventDefault();
                           setIsEditingId(campaign.id);
                           const formData = new FormData(e.currentTarget);
-                          const txData =
-                            await deploymentContext?.crowdFundingApi?.updateCampaign(
-                              campaign.id,
-                              Number(formData.get("target")),
-                              Number(formData.get("duration"))
-                            );
-                          if (txData?.public.status == "SucceedEntirely") {
-                            toast.success("Transaction successful");
-                          } else {
-                            toast.error("Transaction Failed");
+                          try {
+                            const txData =
+                              await deploymentContext?.crowdFundingApi?.updateCampaign(
+                                campaign.id,
+                                formData.get("title") as string,
+                                formData.get("description") as string,
+                                Number(formData.get("target")),
+                                Number(formData.get("duration"))
+                              );
+                            if (txData?.public.status == "SucceedEntirely") {
+                              toast.success("Transaction successful");
+                            } else {
+                              toast.error("Transaction Failed");
+                            }
+                            setIsEditingId(null);
+                          } catch (error) {
+                            const errMsg =
+                              error instanceof Error
+                                ? error.message
+                                : "Failed to Edit Campaign";
+                            toast.error(errMsg);
+                            setIsEditingId(null);
                           }
-                          setIsEditingId(null);
                         }}
                         className="space-y-4"
                       >
@@ -278,9 +307,7 @@ const CampaignBoard = React.memo(() => {
                           <Input
                             id="title"
                             name="title"
-                            value={campaign.campaign.title}
-                            disabled
-                            placeholder="Enter project title"
+                            placeholder={campaign.campaign.title}
                             required
                             className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500"
                           />
@@ -293,11 +320,9 @@ const CampaignBoard = React.memo(() => {
                             Description
                           </Label>
                           <Textarea
-                            value={campaign.campaign.desc}
-                            disabled
                             id="description"
                             name="description"
-                            placeholder="Describe your project"
+                            placeholder={campaign.campaign.desc}
                             required
                             className="bg-zinc-800/50 border-zinc-700/50 text-zinc-100 placeholder:text-zinc-500"
                           />
@@ -389,18 +414,33 @@ const CampaignBoard = React.memo(() => {
                       const amount = Number.parseFloat(
                         formData.get("amount") as string
                       );
-                      await deploymentContext?.crowdFundingApi?.fundCampaign(
-                        campaign.id,
-                        amount
-                      );
-                      setIsDonatingId(null);
+                      try {
+                        const txData =
+                        await deploymentContext?.crowdFundingApi?.fundCampaign(
+                          campaign.id,
+                          amount
+                        );
+                        if (txData?.public.status == "SucceedEntirely") {
+                          toast.success("Transaction successful");
+                        } else {
+                          toast.error("Transaction Failed");
+                        }
+                        setIsDonatingId(null);
+                      } catch (error) {
+                        const errMsg =
+                          error instanceof Error
+                            ? error.message
+                            : "Failed to Fund Campaign";
+                        toast.error(errMsg);
+                        setIsDonatingId(null);
+                      }
                       console.log(amount);
                     }}
                     className="space-y-4"
                   >
                     <div className="space-y-2">
                       <Label htmlFor="amount" className="text-zinc-200">
-                        Amount (ETH)
+                        Amount (tDUST)
                       </Label>
                       <Input
                         id="amount"
