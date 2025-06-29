@@ -1,0 +1,6 @@
+{
+  "buildCommand": "turbo build --filter=ui",
+  "outputDirectory": "packages/ui/dist",
+  "installCommand": "yarn install --frozen-lockfile",
+  "framework": null
+}
