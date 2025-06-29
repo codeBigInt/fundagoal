@@ -84,7 +84,7 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 
 - Contract Documentation: [https://github.com/codeBigInt/fundagoal/blob/main/packages/contract/README.md]
 
-**NOTE**: This project is a monorepo that ustilizes turborepo.
+**NOTE**: This project is a monorepo that utilizes turborepo.
 
 ```js
 
