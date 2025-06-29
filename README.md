@@ -129,10 +129,3 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
     yarn start // Starts the application at https://localhost:8080
 
 ```
-N
-
-**CLI DApp testnet wallets for easy testing**
-
----
-
-_FundAGoal: Where privacy meets purpose_ 🔒✨

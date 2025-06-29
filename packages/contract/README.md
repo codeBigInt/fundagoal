@@ -59,7 +59,14 @@ Creates privacy-preserving commitment for backer data to enable anonymous contri
 struct Backer {
     id: Bytes<32>           // Backer identifier  
     contribution: Uint<32>  // Amount contributed
+    coinType: Bytes<32>  // Token type contributed
 }
+```
+
+### Offchain witness interaction
+The contract utilizes witness to retrieve offchain private state such as `local_secrete_key()`,  `confirm_campaign_expiration()` to confirm if a campaign is active or has ended, and `findBacker()` to generate zero-knoledge proof for verifying backers in the merkle tree. 
+```ts
+
 ```
 
 ## Technical Details
