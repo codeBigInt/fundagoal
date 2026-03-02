@@ -131,3 +131,6 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
     yarn start // Starts the application at https://localhost:8080
 
 ```
+
+### Attribution
+This Decentralized Application is built on the Midnight Blockchain network
