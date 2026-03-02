@@ -1,9 +1,10 @@
 # FundAGoal 🎯
-
 **Anonymous Crowdfunding for the Privacy-First Era**
 
 FundAGoal is a revolutionary decentralized crowdfunding platform that empowers creators to launch funding campaigns while protecting the privacy of both themselves and their supporters. Its built on Midnight Blockchain Network, combining the transparency of blockchain with the anonymity that backers deserve.
 
+### Attribution
+This project is built on the Midnight Network.
 ## What is FundAGoal?
 
 FundAGoal reimagines crowdfunding by solving one of the biggest problems in traditional platforms: **backer's privacy**. While campaigns remain transparent and verifiable, the identity and contribution details of supporters are completely anonymous through advanced zero-knowledge cryptography.
@@ -131,6 +132,3 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
     yarn start // Starts the application at https://localhost:8080
 
 ```
-
-### Attribution
-This Decentralized Application is built on the Midnight Blockchain Network using Compact.
