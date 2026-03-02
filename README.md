@@ -133,4 +133,4 @@ Unlike traditional crowdfunding platforms where backer lists are public, FundAGo
 ```
 
 ### Attribution
-This Decentralized Application is built on the Midnight Blockchain network
+This Decentralized Application is built on the Midnight Blockchain Network using Compact.
