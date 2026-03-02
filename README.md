@@ -2,7 +2,7 @@
 
 **Anonymous Crowdfunding for the Privacy-First Era**
 
-FundAGoal is a revolutionary decentralized crowdfunding platform that empowers creators to launch funding campaigns while protecting the privacy of both themselves and their supporters. Built on the Midnight Network, it combines the transparency of blockchain with the anonymity that backers deserve.
+FundAGoal is a revolutionary decentralized crowdfunding platform that empowers creators to launch funding campaigns while protecting the privacy of both themselves and their supporters. Its built on Midnight Blockchain Network, combining the transparency of blockchain with the anonymity that backers deserve.
 
 ## What is FundAGoal?
 
