@@ -205,7 +205,7 @@ const runContractInteractionLoop = async (walletCtx: WalletContext, config: Conf
 
 const configureProviders = async (ctx: WalletContext, config: Config): Promise<CrowdFundingContractProviders> => {
   const walletAndMidnightProvider = await createWalletAndMidnightProvider(ctx, config);
-  const privateStateStoreName = `${config.privateStateStoreName}-${config.networkId}-lenders-v1`;
+  const privateStateStoreName = `${config.privateStateStoreName}-lenders-v1`;
   const zkConfigProvider = new NodeZkConfigProvider<CrowdFundingCircuitKeys>(config.zkConfigPath);
 
   return {
