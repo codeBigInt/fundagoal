@@ -1,59 +1,58 @@
+import { setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
 import path from 'node:path';
-import { NetworkId, setNetworkId } from '@midnight-ntwrk/midnight-js-network-id';
-import { CrowdFundingPrivateStateId } from '@crowd-funding/crowd-funding-api';
 
 export interface Config {
   readonly privateStateStoreName: string;
   readonly logDir: string;
   readonly zkConfigPath: string;
-  readonly indexer: string;
-  readonly indexerWS: string;
-  readonly node: string;
-  readonly proofServer: string;
-
-  setNetworkId: () => void;
+  indexer: string;
+  indexerWS: string;
+  node: string;
+  proofServer: string;
 }
 
 export const currentDir = path.resolve(new URL(import.meta.url).pathname, '..');
 
-export class TestnetLocalConfig implements Config {
-  privateStateStoreName = CrowdFundingPrivateStateId;
-  logDir = path.resolve(currentDir, '..', 'logs', 'testnet-local', `${new Date().toISOString()}.log`);
-  zkConfigPath = path.resolve(currentDir, '..', '..', 'contract', 'dist', 'managed', 'crowd-funding');
-  indexer = 'http://127.0.0.1:8088/api/v1/graphql';
-  indexerWS = 'ws://127.0.0.1:8088/api/v1/graphql/ws';
-  node = 'http://127.0.0.1:9944';
-  proofServer = 'http://127.0.0.1:6300';
+export const contractConfig = {
+  privateStateStoreName: "crowd-funding",
+  zkConfigPath: path.resolve(currentDir, '..', '..', 'contract', 'dist', 'managed', 'crowd-funding')
+}
 
-  setNetworkId() {
-    setNetworkId(NetworkId.TestNet);
+export class PreviewConfig implements Config {
+  privateStateStoreName = 'crowd-funding-private-state';
+  logDir = path.resolve(currentDir, '..', 'logs', 'preprod-local', `${new Date().toISOString()}.log`);
+  zkConfigPath = path.resolve(currentDir, '..', '..', 'contract', 'dist', 'managed', 'crowd-funding');
+  indexer = 'https://indexer.preview.midnight.network/api/v3/graphql';
+  indexerWS = 'wss://indexer.preview.midnight.network/api/v3/graphql/ws';
+  node = 'https://rpc.preview.midnight.network';
+  proofServer = 'http://127.0.0.1:6300';
+  constructor() {
+    setNetworkId('preview');
   }
 }
 
 export class StandaloneConfig implements Config {
-  privateStateStoreName = CrowdFundingPrivateStateId
+  privateStateStoreName = 'crowd-funding-private-state';
   logDir = path.resolve(currentDir, '..', 'logs', 'standalone', `${new Date().toISOString()}.log`);
-    zkConfigPath = path.resolve(currentDir, '..', '..', 'contract', 'dist', 'managed', 'crowd-funding');
-  indexer = 'http://127.0.0.1:8088/api/v1/graphql';
-  indexerWS = 'ws://127.0.0.1:8088/api/v1/graphql/ws';
-  node = 'http://127.0.0.1:9944';
+  zkConfigPath = path.resolve(currentDir, '..', '..', 'contract', 'dist', 'managed', 'crowd-funding');
+  indexer = 'http://127.0.0.1:8088/api/v3/graphql';
+  indexerWS = 'ws://127.0.0.1:8088/api/v3/graphql/ws';
+  node = 'ws://127.0.0.1:9944';
   proofServer = 'http://127.0.0.1:6300';
-
-  setNetworkId() {
-    setNetworkId(NetworkId.Undeployed);
+  constructor() {
+    setNetworkId('undeployed');
   }
 }
 
-export class TestnetRemoteConfig implements Config {
-  privateStateStoreName = CrowdFundingPrivateStateId
-  logDir = path.resolve(currentDir, '..', 'logs', 'testnet-remote', `${new Date().toISOString()}.log`);
-    zkConfigPath = path.resolve(currentDir, '..', '..', 'contract', 'dist', 'managed', 'crowd-funding');
-  indexer = 'https://indexer-rs.testnet-02.midnight.network/api/v1/graphql';
-  indexerWS = 'wss://indexer-rs.testnet-02.midnight.network/api/v1/graphql/ws';
-  node = 'https://rpc.testnet-02.midnight.network';
+export class PreProdConfig implements Config {
+  privateStateStoreName = 'crowd-funding-private-state';
+  logDir = path.resolve(currentDir, '..', 'logs', 'preprod-remote', `${new Date().toISOString()}.log`);
+  zkConfigPath = path.resolve(currentDir, '..', '..', 'contract', 'dist', 'managed', 'crowd-funding');
+  indexer = 'https://indexer.preprod.midnight.network/api/v3/graphql';
+  indexerWS = 'wss://indexer.preprod.midnight.network/api/v3/graphql/ws';
+  node = 'https://rpc.preprod.midnight.network';
   proofServer = 'http://127.0.0.1:6300';
-
-  setNetworkId() {
-    setNetworkId(NetworkId.TestNet);
+  constructor() {
+    setNetworkId('preview');
   }
 }

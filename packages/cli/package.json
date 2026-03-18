@@ -6,9 +6,8 @@
   "type": "module",
   "packageManager": "yarn@4.9.2",
   "scripts": {
-    "testnet-remote": "node --loader ts-node/esm --experimental-specifier-resolution=node dist/launcher/testnet-remote.js",
-    "testnet-remote-ps": "node --experimental-specifier-resolution=node dist/launcher/testnet-remote-start-proof-server.js",
-    "testnet-local": "node --experimental-specifier-resolution=node dist/launcher/testnet-local.js",
+    "preprod": "node --loader ts-node/esm --experimental-specifier-resolution=node dist/launcher/preprod.js",
+    "preview": "node --experimental-specifier-resolution=node dist/launcher/preview.js",
     "standalone": "node --experimental-specifier-resolution=node dist/launcher/standalone.js",
     "prepack": "yarn build",
     "test": "yarn test-e2e",
@@ -17,7 +16,6 @@
     "lint": "eslint src"
   },
   "dependencies": {
-    "@crowd-funding/crowd-funding-api": "workspace:*",
     "@crowd-funding/crowd-funding-contract": "workspace:*",
     "pino": "^8.16.1",
     "ws": "^8.14.2"

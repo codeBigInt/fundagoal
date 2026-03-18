@@ -16,14 +16,14 @@
     }
   },
   "scripts": {
-    "compact": "run-compactc src/crowd-funding.compact ./src/managed/crowd-funding",
+    "test:compact": "compact compile --skip-zk src/crowd-funding.compact ./src/managed/crowd-funding",
+    "compact": "compact compile src/crowd-funding.compact ./src/managed/crowd-funding",
     "build": "rm -rf dist && tsc --project tsconfig.build.json && cp -R ./src/managed ./dist/managed && cp ./src/crowd-funding.compact dist",
     "lint": "eslint src",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "prepack": "yarn build"
   },
   "devDependencies": {
-    "@crowd-funding/crowd-funding-compact": "workspace:*",
     "eslint": "^9.27.0",
     "jest": "^29.7.0",
     "typescript": "^5.8.2"

@@ -2,7 +2,7 @@ import {
   MerkleTreePath,
   WitnessContext,
 } from "@midnight-ntwrk/compact-runtime";
-import { Ledger } from "./managed/crowd-funding/contract/index.cjs";
+import { Ledger } from "./managed/crowd-funding/contract/index.js";
 
 export type CrowdFundingPrivateState = {
   readonly secrete_key: Uint8Array;

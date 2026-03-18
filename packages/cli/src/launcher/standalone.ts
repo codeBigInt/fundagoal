@@ -5,9 +5,9 @@ import { DockerComposeEnvironment, Wait } from 'testcontainers';
 import { currentDir, StandaloneConfig } from '../config.js';
 
 const config = new StandaloneConfig();
-config.setNetworkId();
-const dockerEnv = new DockerComposeEnvironment(path.resolve(currentDir, '..'), 'standalone.yml')
-  .withWaitStrategy('proof-server', Wait.forLogMessage('Actix runtime found; starting in Actix runtime', 1))
-  .withWaitStrategy('graphql-api', Wait.forLogMessage(/Transactions subscription started/, 1));
+const dockerEnv = new DockerComposeEnvironment(path.resolve(currentDir, '..'), 'compose.yml')
+  .withWaitStrategy('proof-server', Wait.forListeningPorts().withStartupTimeout(180_000))
+  .withWaitStrategy('indexer', Wait.forListeningPorts().withStartupTimeout(180_000))
+  .withWaitStrategy('node', Wait.forListeningPorts().withStartupTimeout(180_000));
 const logger = await createLogger(config.logDir);
 await run(config, logger, dockerEnv);

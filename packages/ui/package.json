@@ -11,7 +11,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@crowd-funding/crowd-funding-api": "workspace:*",
     "@crowd-funding/crowd-funding-contract": "workspace:*",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",

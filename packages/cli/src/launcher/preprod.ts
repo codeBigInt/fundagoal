@@ -1,8 +1,7 @@
 import { createLogger } from '../logger-utils.js';
 import { run } from '../index.js';
-import { TestnetLocalConfig } from '../config.js';
+import { PreProdConfig } from '../config.js';
 
-const config = new TestnetLocalConfig();
-config.setNetworkId();
+const config = new PreProdConfig();
 const logger = await createLogger(config.logDir);
 await run(config, logger);

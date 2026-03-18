@@ -1,2 +1,2 @@
-export * from "./managed/crowd-funding/contract/index.cjs";
+export * from "./managed/crowd-funding/contract/index.js";
 export * from "./witness.js";
